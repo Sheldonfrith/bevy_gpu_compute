@@ -6,7 +6,7 @@ members = [
 ]
 resolver="3"
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Sheldon Frith"]
 rust-version = "1.86"
 description = "Empowering anyone to leverage GPU-acceleration with as little barrier-to-entry as possible"
