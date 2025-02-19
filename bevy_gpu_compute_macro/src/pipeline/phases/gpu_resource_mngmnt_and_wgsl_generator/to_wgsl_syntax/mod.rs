@@ -9,6 +9,7 @@ use proc_macro2::{Span, TokenStream};
 use quote::ToTokens;
 use remove_attributes::remove_attributes;
 use remove_pub_from_struct_def::PubRemover;
+use remove_use_stmts::UseStmtRemover;
 use syn::{File, parse, visit::Visit, visit_mut::VisitMut};
 use r#type::TypeToWgslTransformer;
 use type_def::TypeDefToWgslTransformer;
@@ -64,6 +65,7 @@ mod implicit_to_explicit_return;
 mod local_var;
 pub mod remove_attributes;
 mod remove_pub_from_struct_def;
+mod remove_use_stmts;
 mod r#type;
 mod type_def;
 mod wgsl_builtin_constructors;
@@ -87,7 +89,7 @@ pub fn convert_file_to_wgsl(
         );
         abort!(Span::call_site(), message);
     };
-
+    UseStmtRemover {}.visit_file_mut(&mut file);
     PubRemover {}.visit_file_mut(&mut file);
     TypeToWgslTransformer { custom_types }.visit_file_mut(&mut file);
     ArrayToWgslTransformer {}.visit_file_mut(&mut file);

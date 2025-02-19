@@ -26,6 +26,7 @@ pub struct WgslShaderModuleUserPortion {
     /// look for any attempt to ASSIGN to the value of "global_id.x", "global_id.y", or "global_id.z" or just "global_id" and throw an error
     pub main_function: Option<WgslFunction>,
     pub binding_numbers_by_variable_name: Option<HashMap<String, u32>>,
+    pub use_statements: Vec<WgslImport>,
 }
 impl WgslShaderModuleUserPortion {
     pub fn empty() -> Self {
@@ -38,6 +39,7 @@ impl WgslShaderModuleUserPortion {
             helper_functions: vec![],
             main_function: None,
             binding_numbers_by_variable_name: None,
+            use_statements: vec![],
         }
     }
 }

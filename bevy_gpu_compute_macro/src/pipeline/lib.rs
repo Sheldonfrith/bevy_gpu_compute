@@ -7,6 +7,7 @@ use super::phases::{
     module_for_rust_usage_cleaner::compiler_phase::ModuleForRustUsageCleaner,
     non_mutating_tree_validation::compiler_phase::NonMutatingTreeValidation,
     typesafe_buffer_builders_generator::compiler_phase::TypesafeBufferBuildersGenerator,
+    user_import_collector::compiler_phase::UserImportCollector,
     wgsl_helper_transformer::compiler_phase::WgslHelperTransformer,
 };
 use crate::pipeline::compilation_unit::CompilationUnit;
@@ -20,6 +21,7 @@ impl Default for CompilerPipeline {
         Self {
             phases: vec![
                 Box::new(NonMutatingTreeValidation {}),
+                Box::new(UserImportCollector {}),
                 Box::new(CustomTypeCollector {}),
                 Box::new(TypesafeBufferBuildersGenerator {}),
                 Box::new(WgslHelperTransformer {}),
@@ -31,8 +33,8 @@ impl Default for CompilerPipeline {
     }
 }
 impl CompilerPipeline {
-    pub fn compile(&self, module: syn::ItemMod) -> TokenStream {
-        let mut unit = CompilationUnit::new(module);
+    pub fn compile(&self, module: syn::ItemMod, main_func_required: bool) -> TokenStream {
+        let mut unit = CompilationUnit::new(module, main_func_required);
         for phase in &self.phases {
             phase.execute(&mut unit);
         }

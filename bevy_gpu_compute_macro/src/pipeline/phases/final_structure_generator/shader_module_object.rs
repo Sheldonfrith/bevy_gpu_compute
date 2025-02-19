@@ -76,9 +76,18 @@ pub fn generate_shader_module_object(
             .unwrap(),
     );
 
+    let library_modules: TokenStream = wgsl_shader_module
+        .use_statements
+        .iter()
+        .map(|use_statement| {
+            let ts = ToStructInitializer::wgsl_import(use_statement);
+            quote!(#ts,)
+        })
+        .collect();
+
     quote!(
         pub fn parsed() -> WgslShaderModuleUserPortion {
-            WgslShaderModuleUserPortion {
+            let mut user_portion = WgslShaderModuleUserPortion {
                 static_consts: [
                     #static_consts
                     ]
@@ -104,15 +113,20 @@ pub fn generate_shader_module_object(
                 .into(),
                 main_function: #main_function,
                 binding_numbers_by_variable_name: Some(#bindings_map),
-            }
+                use_statements: [].into(),
+            };
+            merge_libraries_into_wgsl_module(&mut user_portion, &mut [
+                #library_modules
+            ].into());
+            user_portion
         }
     )
 }
 
 #[cfg(test)]
 mod test {
-    use proc_macro_error::abort;
     use proc_macro2::{Span, TokenStream};
+    use proc_macro_error::abort;
 
     #[test]
     pub fn test_parse_str() {

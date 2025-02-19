@@ -3,7 +3,10 @@ use proc_macro2::TokenStream;
 
 use super::{
     compilation_metadata::CompilationMetadata,
-    phases::custom_type_collector::custom_type::CustomType,
+    phases::{
+        custom_type_collector::custom_type::CustomType,
+        user_import_collector::user_import::UserImport,
+    },
 };
 
 pub struct CompilationUnit {
@@ -15,18 +18,23 @@ pub struct CompilationUnit {
 }
 
 impl CompilationUnit {
-    pub fn new(original_rust_module: syn::ItemMod) -> Self {
+    pub fn new(original_rust_module: syn::ItemMod, main_func_required: bool) -> Self {
         CompilationUnit {
             original_rust_module,
             rust_module_for_cpu: None,
             rust_module_for_gpu: None,
             compiled_tokens: None,
             metadata: CompilationMetadata {
+                user_imports: None,
                 custom_types: None,
                 wgsl_module_user_portion: None,
                 typesafe_buffer_builders: None,
+                main_func_required,
             },
         }
+    }
+    pub fn main_func_required(&self) -> bool {
+        self.metadata.main_func_required
     }
     pub fn rust_module_for_gpu(&self) -> &syn::ItemMod {
         if self.rust_module_for_gpu.is_none() {
@@ -39,6 +47,15 @@ impl CompilationUnit {
             panic!("rust_module_for_cpu is not set");
         }
         self.rust_module_for_cpu.as_ref().unwrap()
+    }
+    pub fn set_user_imports(&mut self, user_imports: Vec<UserImport>) {
+        self.metadata.user_imports = Some(user_imports);
+    }
+    pub fn user_imports(&self) -> &Vec<UserImport> {
+        if self.metadata.user_imports.is_none() {
+            panic!("user_imports is not set");
+        }
+        self.metadata.user_imports.as_ref().unwrap()
     }
     pub fn set_custom_types(&mut self, custom_types: Vec<CustomType>) {
         self.metadata.custom_types = Some(custom_types);

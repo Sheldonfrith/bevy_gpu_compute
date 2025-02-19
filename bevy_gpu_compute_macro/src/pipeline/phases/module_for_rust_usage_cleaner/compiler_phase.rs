@@ -12,7 +12,9 @@ pub struct ModuleForRustUsageCleaner;
 impl CompilerPhase for ModuleForRustUsageCleaner {
     fn execute(&self, input: &mut CompilationUnit) {
         let mut m = input.rust_module_for_cpu().clone();
-        mutate_main_function_for_cpu_usage(input.wgsl_module_user_portion(), &mut m);
+        if input.main_func_required() {
+            mutate_main_function_for_cpu_usage(input.wgsl_module_user_portion(), &mut m);
+        }
         remove_internal_attributes(&mut m);
         make_types_pod(&mut m);
         make_types_public(&mut m);

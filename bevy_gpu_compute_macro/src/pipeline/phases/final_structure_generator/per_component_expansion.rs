@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use bevy_gpu_compute_core::{
-    wgsl::shader_custom_type_name::ShaderCustomTypeName,
-    wgsl::shader_sections::{
-        WgslConstAssignment, WgslFunction, WgslInputArray, WgslOutputArray,
+use bevy_gpu_compute_core::wgsl::{
+    shader_custom_type_name::ShaderCustomTypeName,
+    shader_sections::{
+        WgslConstAssignment, WgslFunction, WgslImport, WgslInputArray, WgslOutputArray,
         WgslShaderModuleSectionCode, WgslType,
     },
 };
@@ -88,6 +88,12 @@ impl ToStructInitializer {
             }
         )
     }
+
+    pub fn wgsl_import(c: &WgslImport) -> TokenStream {
+        let i: TokenStream = c.path.parse().unwrap();
+        quote!(#i)
+    }
+
     pub fn hash_map(c: &HashMap<String, u32>) -> TokenStream {
         let entries: TokenStream = c
             .iter()

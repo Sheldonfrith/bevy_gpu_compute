@@ -5,4 +5,5 @@ pub mod gpu_resource_mngmnt_and_wgsl_generator;
 pub mod module_for_rust_usage_cleaner;
 pub mod non_mutating_tree_validation;
 pub mod typesafe_buffer_builders_generator;
+pub mod user_import_collector;
 pub mod wgsl_helper_transformer;

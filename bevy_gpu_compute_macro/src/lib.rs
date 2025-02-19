@@ -60,7 +60,16 @@ pub fn wgsl_shader_module(_attr: TokenStream, item: TokenStream) -> TokenStream 
     set_dummy(item.clone().into());
     let module = parse_macro_input!(item as syn::ItemMod);
     let compiler_pipeline = CompilerPipeline::default();
-    compiler_pipeline.compile(module).into()
+    compiler_pipeline.compile(module, true).into()
+}
+
+#[proc_macro_attribute]
+#[proc_macro_error]
+pub fn wgsl_shader_module_library(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    set_dummy(item.clone().into());
+    let module = parse_macro_input!(item as syn::ItemMod);
+    let compiler_pipeline = CompilerPipeline::default();
+    compiler_pipeline.compile(module, false).into()
 }
 
 /// used to help this library figure out what to do with user-defined types

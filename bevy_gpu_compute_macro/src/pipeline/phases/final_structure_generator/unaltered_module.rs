@@ -24,6 +24,7 @@ pub fn generate_unaltered_module(original_module: &ItemMod) -> TokenStream {
     quote! {
         #[allow(dead_code, unused_variables, unused_imports)]
         mod #new_ident {
+            use super::*;
             #content_combined
         }
     }
